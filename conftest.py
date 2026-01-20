@@ -24,12 +24,12 @@ def test_setup_android(request):
 		"deviceName": "Galaxy.*",
 		"platformVersion": "11",
 		"isRealMobile": True,
-        "app":"lt://proverbial-android",   #Enter the app (.apk) url here
+        "app":"lt://APP10160622431766424164986229",   #Enter the app (.apk) url here
         "build":"Android Pytest"
 	}
     }
 
-    driver = webdriver.Remote("https://<username>:<accessKey>@mobile-hub.lambdatest.com/wd/hub",
+    driver = webdriver.Remote("https://namratab:LT_zyYTOxIOb9fwBYp4xnHA5rm2f4jIzIItFtz57kzrUF6Pyi1@mobile-hub.lambdatest.com/wd/hub",
             options=AppiumOptions().load_capabilities(caps))
     request.cls.driver = driver
     
@@ -49,7 +49,7 @@ def test_setup_ios(request):
 		"deviceName": "iPhone.*",
 		"platformVersion": "14",
 		"isRealMobile": True,
-        "app":"lt://proverbial-iOS",   #Enter the app (.ipa) url here
+        "app":"lt://APP10160622431766424164986229",   #Enter the app (.ipa) url here
         "build":"iOS Pytest"
 	}
     }
