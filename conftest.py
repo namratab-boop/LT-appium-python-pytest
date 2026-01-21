@@ -5,7 +5,7 @@ from appium.options.common import AppiumOptions
 
 def finalize_driver(request, driver):
     def fin():
-        if request.node.rep_call.failed:
+        if hasattr(request.node, 'rep_call') and request.node.rep_call.failed:
             driver.execute_script('lambda-status=failed')
         else:
             driver.execute_script('lambda-status=passed')
@@ -14,61 +14,58 @@ def finalize_driver(request, driver):
 
 @pytest.fixture(scope='function')
 def test_setup_android(request):
-    test_name = request.node.name
-    build = environ.get('BUILD', "Pytest Android Sample")
+    username = environ.get('LT_USERNAME')
+    access_key = environ.get('LT_ACCESS_KEY')
+    
+    if not username or not access_key:
+        raise ValueError("LT_USERNAME or LT_ACCESS_KEY environment variables are not set!")
 
     caps = {
         "lt:options": {
-		"w3c": True,
-		"platformName": "Android",
-		"deviceName": "Galaxy.*",
-		"platformVersion": "11",
-		"isRealMobile": True,
-        "app":"lt://APP10160622431766424164986229",   #Enter the app (.apk) url here
-        "build":"Android Pytest"
-	}
+            "w3c": True,
+            "platformName": "Android",
+            "deviceName": "Galaxy.*",
+            "platformVersion": "11",
+            "isRealMobile": True,
+            "app": "lt://APP10160622431766424164986229",
+            "build": environ.get('BUILD', "Android Pytest Build")
+        }
     }
 
-    driver = webdriver.Remote("https://namratab:LT_zyYTOxIOb9fwBYp4xnHA5rm2f4jIzIItFtz57kzrUF6Pyi1@mobile-hub.lambdatest.com/wd/hub",
-            options=AppiumOptions().load_capabilities(caps))
+    remote_url = f"https://{username}:{access_key}@mobile-hub.lambdatest.com/wd/hub"
+    driver = webdriver.Remote(remote_url, options=AppiumOptions().load_capabilities(caps))
     request.cls.driver = driver
-    
     yield driver
-    
     finalize_driver(request, driver)
 
 @pytest.fixture(scope='function')
 def test_setup_ios(request):
-    test_name = request.node.name
-    build = environ.get('BUILD', "Pytest iOS Sample")
+    username = environ.get('LT_USERNAME')
+    access_key = environ.get('LT_ACCESS_KEY')
+
+    if not username or not access_key:
+        raise ValueError("LT_USERNAME or LT_ACCESS_KEY environment variables are not set!")
 
     caps = {
         "lt:options": {
-		"w3c": True,
-		"platformName": "iOS",
-		"deviceName": "iPhone.*",
-		"platformVersion": "14",
-		"isRealMobile": True,
-        "app":"lt://APP10160622431766424164986229",   #Enter the app (.ipa) url here
-        "build":"iOS Pytest"
-	}
+            "w3c": True,
+            "platformName": "iOS",
+            "deviceName": "iPhone.*",
+            "platformVersion": "14",
+            "isRealMobile": True,
+            "app": "lt://APP10160622431766424164986229",
+            "build": environ.get('BUILD', "iOS Pytest Build")
+        }
     }
 
-    driver = webdriver.Remote("https://<username>:<accessKey>@mobile-hub.lambdatest.com/wd/hub",
-            options=AppiumOptions().load_capabilities(caps))
+    remote_url = f"https://{username}:{access_key}@mobile-hub.lambdatest.com/wd/hub"
+    driver = webdriver.Remote(remote_url, options=AppiumOptions().load_capabilities(caps))
     request.cls.driver = driver
-    
     yield driver
-    
     finalize_driver(request, driver)
-    
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    # this sets the result as a test attribute for LambdaTest reporting.
-    # execute all other hooks to obtain the report object
     outcome = yield
     rep = outcome.get_result()
-
-    # set an report attribute for each phase of a call, which can
-    # be "setup", "call", "teardown"
     setattr(item, "rep_" + rep.when, rep)
