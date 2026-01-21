@@ -4,16 +4,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  # These link to the secret variables you will create in the ADO UI
-  LT_USERNAME: $(LT_USERNAME)
-  LT_ACCESS_KEY: $(LT_ACCESS_KEY)
-
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.9'
-  displayName: 'Install Python 3.9'
+    versionSpec: '3.10'
+  displayName: 'Install Python 3.10'
 
 - script: |
     python -m pip install --upgrade pip
@@ -21,6 +16,10 @@ steps:
   displayName: 'Install Dependencies'
 
 - script: |
-    # This command runs your Appium tests via Pytest
+    # Secret variables are mapped here to avoid cyclical references
     pytest tests/
   displayName: 'Run LambdaTest Appium Tests'
+  env:
+    # Map the secret variables from the ADO UI/Library to environment variables
+    LT_USERNAME: $(LT_USERNAME)
+    LT_ACCESS_KEY: $(LT_ACCESS_KEY)
