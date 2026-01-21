@@ -16,10 +16,9 @@ steps:
   displayName: 'Install Dependencies'
 
 - script: |
-    # Secret variables are mapped here to avoid cyclical references
     pytest tests/
   displayName: 'Run LambdaTest Appium Tests'
   env:
-    # Map the secret variables from the ADO UI/Library to environment variables
+    # This maps your ADO Secret Variables to the Python Environment
     LT_USERNAME: $(LT_USERNAME)
     LT_ACCESS_KEY: $(LT_ACCESS_KEY)
