@@ -53,7 +53,7 @@ def test_setup_ios(request):
             "deviceName": "iPhone.*",
             "platformVersion": "14",
             "isRealMobile": True,
-            "app": "lt://APP10160622431766424164986229",
+            "app": "lt://APP1016018631760361477812757",
             "build": environ.get('BUILD', "iOS Pytest Build")
         }
     }
